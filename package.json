@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node server",
-    "dev": "nodemon --watch server server"
+    "dev": "nodemon --watch server server",
+    "flush-dumps": "rm ./dumps/*.json",
+    "lint": "eslint server"
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,7 @@
     "koa-cors": "0.0.16",
     "koa-router": "5.4.0",
     "request-promise": "^3.0.0",
+    "shelljs": "^0.7.0",
     "winston": "2.2.0"
   },
   "devDependencies": {

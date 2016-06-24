@@ -38,4 +38,8 @@ jspm_packages
 
 .env
 nodemon.json
-dist
+fakes/*
+!fakes/example.js
+!fakes/README.md
+dumps/*
+!dumps/.gitkeep

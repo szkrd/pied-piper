@@ -1,4 +1,5 @@
 const requiredEnvVars = ['TARGET']
+const path = require('path')
 
 requiredEnvVars.forEach(req => {
   if (!process.env[req]) {
@@ -14,7 +15,10 @@ const config = {
   isDev: env === 'development',
   logLevel: process.env.LOG_LEVEL || 'error',
   port: process.env.PORT || 3100,
-  target: process.env.TARGET
+  target: process.env.TARGET,
+  appDir: path.resolve(__dirname, '../'),
+  dumpDir: path.resolve(__dirname, '../dumps/'),
+  dump: true // TODO: allow dynamically switching it on or off
 }
 
 module.exports = config
