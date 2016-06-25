@@ -66,7 +66,7 @@ function * get (next) {
       Object.assign({ target }, rpRequest),
       response
     )
-    logger.info(`Saved response from ${uri} to db [${params.project}] #${insertedResource._id}`)
+    logger.info(`Saved response from ${uri} to db [${params.project}]`)
   }
 
   responseWriter(this, response)
