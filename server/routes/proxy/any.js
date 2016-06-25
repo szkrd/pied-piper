@@ -34,7 +34,7 @@ function * get (next) {
   if (fromDb) {
     const response = fromDb.response
     responseWriter(this, response)
-    logger.info(`db res ${method}: ${uri} - ${response.statusCode}`)
+    logger.info(`db res ${method}: ${uri} - ${response.statusCode} #${fromDb._id}`)
     yield next
     return
   }
