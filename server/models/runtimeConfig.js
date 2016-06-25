@@ -4,6 +4,7 @@ const configName = 'runtime'
 
 // default config, will be injected into db upon first change
 const config = {
+  active: true,
   dump: true
 }
 
@@ -12,7 +13,7 @@ function get () {
   const coll = db.collection(collectionName)
   return coll.findOne({ name: configName })
     .then(result => {
-      if (result === null) {
+      if (!result) {
         return config
       }
       return result
@@ -22,7 +23,7 @@ function get () {
 // set config then save to db
 function set (overlay) {
   const coll = db.collection(collectionName)
-  get()
+  return get()
     .then(result => {
       return coll
         .findOneAndReplace(

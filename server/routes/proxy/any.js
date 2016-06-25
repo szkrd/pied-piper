@@ -3,12 +3,15 @@ const rp = require('request-promise')
 const config = require('../../../config/server')
 const proxyUtils = require('./utils')
 const proxiedResource = require('../../models/proxiedResource')
+const runtimeConfig = require('../../models/runtimeConfig')
 
 const useFake = proxyUtils.useFake
 const dumpFile = proxyUtils.dumpFile
 const responseWriter = proxyUtils.responseWriter
 
 function * get (next) {
+  yield runtimeConfig.set({})
+  const runtime = yield runtimeConfig.get()
   const startTime = Date.now()
   const params = this.params
   const method = this.method
@@ -23,7 +26,7 @@ function * get (next) {
 
   // if we have a fake response, return that and say good bye
   const fakeResponse = useFake(target, method, params, body, headers)
-  if (fakeResponse) {
+  if (fakeResponse && runtime.active) {
     this.body = fakeResponse
     logger.info(`fake response from 'fakes/${params.project}.js'`)
     yield next
@@ -32,7 +35,7 @@ function * get (next) {
 
   // try to load it from db, if successful, then do not continue
   const fromDb = yield proxiedResource.load(params.project, rpRequest)
-  if (fromDb) {
+  if (fromDb && runtime.active) {
     const response = fromDb.response
     responseWriter(this, response)
     logger.info(`db res ${method}: ${uri} - ${response.statusCode} #${fromDb._id}`)
