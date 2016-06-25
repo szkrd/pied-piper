@@ -6,6 +6,8 @@ const Router = require('koa-router')
 
 const config = require('../config/server')
 const errorHandler = require('./utils/errorHandler')
+const db = require('./models/db')
+const cleanUp = require('./utils/cleanUp')
 
 logger.default.transports.console.colorize = true
 logger.default.transports.console.prettyPrint = true
@@ -30,6 +32,9 @@ app.use(errorHandler)
 app.use(bodyParser())
 app.use(cors({credentials: true}))
 app.use(router.routes())
-app.listen(config.port)
 
-logger.info(`Listening on ${config.port}`)
+cleanUp.register()
+db.connect(null, () => {
+  app.listen(config.port)
+  logger.info(`Listening on ${config.port}`)
+})

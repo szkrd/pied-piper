@@ -1,4 +1,4 @@
-const requiredEnvVars = ['TARGET']
+const requiredEnvVars = ['TARGET', 'MONGODB_URI']
 const path = require('path')
 
 requiredEnvVars.forEach(req => {
@@ -15,6 +15,7 @@ const config = {
   isDev: env === 'development',
   logLevel: process.env.LOG_LEVEL || 'error',
   port: process.env.PORT || 3100,
+  mongoDbUri: process.env.MONGODB_URI,
   target: process.env.TARGET,
   appDir: path.resolve(__dirname, '../'),
   dumpDir: path.resolve(__dirname, '../dumps/'),
