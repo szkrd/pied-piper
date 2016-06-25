@@ -1,17 +1,18 @@
 module.exports = [
   {
-    url: '/asset/map?languageCode=en-gb',
-    method: 'GET',
-    response: {}
+    url: '/foo/bar?very=param',  // url is required, string or regexp
+    method: 'GET',  // method is required, string or regexp
+    response: {} // response is required, object or function
   },
   {
-    url: /\/asset\/route\?destination=.*/,
+    url: /\/bar\/foo\?soregex=.*/,
     method: /(GET|POST)/,
     response: {}
   },
   {
     url: /.*/,
-    callback: function (url, method, params, body, headers) { // all request
+    method: /.*/,
+    response: function (url, method, params, body, headers) { // all request
       return {}
     }
   }
