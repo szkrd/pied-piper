@@ -25,6 +25,7 @@ function * get (next) {
   const fakeResponse = useFake(target, method, params, body, headers)
   if (fakeResponse) {
     this.body = fakeResponse
+    logger.info(`fake response from 'fakes/${params.project}.js'`)
     yield next
     return
   }
@@ -47,27 +48,25 @@ function * get (next) {
   }, rpRequest)
 
   let response
-  let technicalError
   try {
     response = yield rp(options)
   } catch (err) {
-    technicalError = true
-    logger.error(`Request failed due to technical reasons (${uri})`, err)
+    logger.error(`Request failed due to technical reasons (${uri})`)
+    yield next
+    return
   }
 
-  if (config.dump && !technicalError) {
+  if (config.dump) {
     dumpFile(uri, method, this.request, response)
   }
 
   // if the response was fine, save it to the db
-  if (!technicalError) {
-    const insertedResource = yield proxiedResource.save(
-      params.project,
-      Object.assign({ target }, rpRequest),
-      response
-    )
-    logger.info(`Saved response from ${uri} to db [${params.project}]`)
-  }
+  yield proxiedResource.save(
+    params.project,
+    Object.assign({ target }, rpRequest),
+    response
+  )
+  logger.info(`Saved response from ${uri} to db [${params.project}]`)
 
   responseWriter(this, response)
   const elapsed = Math.round((Date.now() - startTime) / 1000)
