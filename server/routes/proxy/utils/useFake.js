@@ -7,7 +7,6 @@ const rexify = (s) => _.isRegExp(s) ? s : new RegExp(_.escapeRegExp(s))
 module.exports = (url, method, params, body, headers) => {
   const project = params.project
   const projectRepo = repo[project]
-  console.log(project, projectRepo, repo)
   if (!projectRepo) {
     return
   }

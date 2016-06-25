@@ -1,4 +1,5 @@
 module.exports = {
   dumpFile: require('./dumpFile'),
-  useFake: require('./useFake')
+  useFake: require('./useFake'),
+  responseWriter: require('./responseWriter')
 }

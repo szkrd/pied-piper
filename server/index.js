@@ -16,6 +16,7 @@ logger.level = config.logLevel
 require('./utils/fakeRepository')
 const proxy = require('./routes/proxy')
 const status = require('./routes/status')
+const flush = require('./routes/flush')
 
 const app = koa()
 const router = new Router()
@@ -27,6 +28,7 @@ router
   .patch('/:project/proxy/*', proxy.patch)
   .delete('/:project/proxy/*', proxy.delete)
   .get('/api/status', status.get)
+  .delete('/api/flush/:project', flush.delete)
 
 app.use(errorHandler)
 app.use(bodyParser())
