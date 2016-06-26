@@ -10,7 +10,15 @@ pe.appendStyle({
   }
 })
 
-module.exports = function * (next) {
+function * raiseFourOhFour (next) {
+  yield next
+  var status = this.status || 404
+  if (status === 404) {
+    this.throw(404)
+  }
+}
+
+function * catchAll (next) {
   try {
     yield next
   } catch (err) {
@@ -34,4 +42,9 @@ module.exports = function * (next) {
     this.status = resp.status
     this.body = resp
   }
+}
+
+module.exports = {
+  raiseFourOhFour,
+  catchAll
 }

@@ -19,7 +19,6 @@ const config = {
   target: process.env.TARGET,
   appDir: path.resolve(__dirname, '../'),
   dumpDir: path.resolve(__dirname, '../dumps/'),
-  dump: true // TODO: allow dynamically switching it on or off
 }
 
 module.exports = config

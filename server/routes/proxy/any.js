@@ -1,5 +1,7 @@
 const logger = require('winston')
 const rp = require('request-promise')
+const joi = require('joi')
+const joiValidate = require('../../utils/joiValidate')
 const config = require('../../../config/server')
 const proxyUtils = require('./utils')
 const proxiedResource = require('../../models/proxiedResource')
@@ -9,11 +11,15 @@ const useFake = proxyUtils.useFake
 const dumpFile = proxyUtils.dumpFile
 const responseWriter = proxyUtils.responseWriter
 
+const paramsSchema = {
+  project: joi.string().lowercase().token().max(64)
+}
+
 function * get (next) {
-  yield runtimeConfig.set({})
   const runtime = yield runtimeConfig.get()
+  let active = runtime.active
   const startTime = Date.now()
-  const params = this.params
+  const params = joiValidate(this.params, paramsSchema)
   const method = this.method
   const body = this.request.body
   const headers = this.request.headers
@@ -21,12 +27,17 @@ function * get (next) {
   const uri = config.target.replace(/\/$/, '') + target
   const rpRequest = { method, uri, body, headers }
 
+  // if this project had been explicitly disabled, then set active to false
+  if ((runtime.disabledProjects || []).includes(params.project)) {
+    active = false
+  }
+
   logger.info(`client req ${method}: ${uri}`)
   delete headers.host // don't give away us
 
   // if we have a fake response, return that and say good bye
   const fakeResponse = useFake(target, method, params, body, headers)
-  if (fakeResponse && runtime.active) {
+  if (fakeResponse && active) {
     this.body = fakeResponse
     logger.info(`fake response from 'fakes/${params.project}.js'`)
     yield next
@@ -35,7 +46,7 @@ function * get (next) {
 
   // try to load it from db, if successful, then do not continue
   const fromDb = yield proxiedResource.load(params.project, rpRequest)
-  if (fromDb && runtime.active) {
+  if (fromDb && active) {
     const response = fromDb.response
     responseWriter(this, response)
     logger.info(`db res ${method}: ${uri} - ${response.statusCode} #${fromDb._id}`)
@@ -59,7 +70,7 @@ function * get (next) {
     return
   }
 
-  if (config.dump) {
+  if (runtime.dump) {
     dumpFile(uri, method, this.request, response)
   }
 

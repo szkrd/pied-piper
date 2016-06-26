@@ -4,9 +4,9 @@ const runtimeConfig = require('../../models/runtimeConfig')
 const fakes = require('../../utils/fakeRepository')
 
 module.exports = function * () {
-  const status = _.pick(config, ['env', 'port', 'target'])
-  const runtime = yield runtimeConfig.get()
+  const status = { preFlight: _.pick(config, ['env', 'port', 'target']) }
   status.fakes = (Object.keys(fakes) || []).sort()
-  status.dump = runtime.dump
-  this.body = status
+  const runtime = yield runtimeConfig.get()
+  const runtimeClean = _.omit(runtime, '_id', 'name')
+  this.body = Object.assign(status, runtimeClean)
 }
