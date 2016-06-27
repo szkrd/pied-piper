@@ -11,6 +11,7 @@ const runtimeConfig = require('../../models/runtimeConfig')
 const useFake = proxyUtils.useFake
 const dumpFile = proxyUtils.dumpFile
 const responseWriter = proxyUtils.responseWriter
+const isServerError = proxyUtils.isServerError
 
 const paramsSchema = {
   project: joi.string().lowercase().token().max(64)
@@ -67,6 +68,13 @@ function * get (next) {
     response = yield rp(options)
   } catch (err) {
     logger.error(`Request failed due to technical reasons (${uri})`)
+    yield next
+    return
+  }
+
+  // severe errors (but not technical) - probably the response is not even a valid json
+  if (isServerError(response)) {
+    logger.error(`Request failed due to severe server error (${uri})`)
     yield next
     return
   }
