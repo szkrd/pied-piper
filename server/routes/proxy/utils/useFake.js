@@ -4,7 +4,7 @@ const repo = require('../../../utils/fakeRepository')
 
 const rexify = (s) => _.isRegExp(s) ? s : new RegExp(_.escapeRegExp(s))
 
-module.exports = (url, method, params, body, headers) => {
+module.exports = function * useFake (url, method, params, body, headers) {
   const project = params.project
   const projectRepo = repo[project]
   if (!projectRepo) {
@@ -16,37 +16,46 @@ module.exports = (url, method, params, body, headers) => {
   }
 
   let found
-  _.forEach(projectRepo, (rule, i) => {
+  for (let i = 0, l = projectRepo.length; i < l; i++) {
+    const rule = projectRepo[i]
     // url is required
     if (!rule.url) {
       logger.warn(`Fake rule has no url field '${project}' #${i}`)
-      return true
+      continue
     }
     const urlRex = rexify(rule.url)
     if (!urlRex.test(url)) {
-      return true
+      continue
     }
     // method is required
     if (!rule.method) {
       logger.warn(`Fake rule has no method field '${project}' '${rule.url}'`)
-      return true
+      continue
     }
     const methodRex = rexify(rule.method)
     if (!methodRex.test(method)) {
-      return true
+      continue
     }
     // response is required
     if (!rule.response) {
       logger.warn(`Fake rule has no response field '${project}' '${rule.url}'`)
-      return true
+      continue
     }
     // finally
     if (typeof rule.response === 'function') {
-      found = rule.response(url, method, params, body, headers)
-      return false // done
+      if (!rule.response.constructor.name === 'GeneratorFunction') {
+        logger.warn(`Fake rule function must be a generator '${project}' '${rule.url}'`)
+        found = rule.response(url, method, params, body, headers)
+      } else {
+        found = yield rule.response(url, method, params, body, headers)
+      }
+    } else if (typeof rule.response === 'object') {
+      found = rule.response
     }
-    found = rule.response
-    return false // done
-  })
+    break
+  }
+  if (typeof found === 'object' && (!found.body && !found.status)) {
+    found = { statusCode: 200, body: found }
+  }
   return found
 }

@@ -45,9 +45,9 @@ function * get (next) {
   }
 
   // if we have a fake response, return that and say good bye
-  const fakeResponse = useFake(target, method, params, body, headers)
+  const fakeResponse = yield useFake(target, method, params, body, headers)
   if (fakeResponse && active) {
-    this.body = fakeResponse
+    responseWriter(this, fakeResponse)
     logger.info(`fake response from 'fakes/${params.project}.js'`)
     yield next
     return
