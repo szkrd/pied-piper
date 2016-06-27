@@ -4,11 +4,11 @@ const configName = 'runtime'
 
 // default config, will be injected into db upon first change
 const config = {
-  recording: true,
-  active: true,
-  dump: true,
+  recording: true, // store successful responses in the db
+  active: true, // if inactive, all the requests will be forwarded to the remote api
+  dump: true, // save responses into dump directory
   sleep: 0, // sleep in sec
-  disabledProjects: []
+  disabledProjects: [] // array of strings, same as active, but on a per project basis
 }
 
 // get from db or default

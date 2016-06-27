@@ -20,6 +20,16 @@ like `http://localhost:3100/myproject/proxy` (_myproject_ can be
 a name of your session, project or anything, this will be the collection
 id in the database and it will group requests together).
 
+## runtime configuration
+
+* __recording__: toggle recording of responses into db
+* __active__: if inactive, all the requests will be forwarded to the remote api
+* __dump__: save responses into dump directory
+* __sleep__: sleep in sec (to sleep on a certain response only, use fakes' generator response)
+* __disabledProjects__: array of strings, same as active, but on a per project basis
+
+See [default values](./server/models/runtimeConfig.js),
+[api interface](./server/routes/config/put.js)
 
 ## env vars example
 
