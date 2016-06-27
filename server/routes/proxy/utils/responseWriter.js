@@ -5,6 +5,6 @@ module.exports = (ctx, response) => {
     ctx.set(i, rHeaders[i])
   }
   ctx.body = response.body
-  ctx.statusCode = response.statusCode
+  ctx.status = response.statusCode
   return ctx
 }
