@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const logger = require('winston')
 const rp = require('request-promise')
 const joi = require('joi')
@@ -19,7 +20,7 @@ function * get (next) {
   const runtime = yield runtimeConfig.get()
   let active = runtime.active
   const startTime = Date.now()
-  const params = joiValidate(this.params, paramsSchema)
+  const params = joiValidate({project: _.get(this, 'params.project')}, paramsSchema)
   const method = this.method
   const body = this.request.body
   const headers = this.request.headers
