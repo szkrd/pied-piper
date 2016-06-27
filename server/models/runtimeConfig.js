@@ -4,6 +4,7 @@ const configName = 'runtime'
 
 // default config, will be injected into db upon first change
 const config = {
+  recording: true,
   active: true,
   dump: true,
   disabledProjects: []
@@ -26,7 +27,6 @@ function set (overlay) {
   const coll = db.collection(collectionName)
   return get()
     .then(result => {
-      console.log(Object.assign({name: configName}, result, overlay))
       return coll
         .findOneAndReplace(
           {name: configName},

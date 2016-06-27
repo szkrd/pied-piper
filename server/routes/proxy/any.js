@@ -82,12 +82,16 @@ function * get (next) {
   }
 
   // if the response was fine, save it to the db
-  yield proxiedResource.save(
-    params.project,
-    Object.assign({ target }, rpRequest),
-    response
-  )
-  logger.info(`Saved response from ${uri} to db [${params.project}]`)
+  if (runtime.recording) {
+    yield proxiedResource.save(
+      params.project,
+      Object.assign({ target }, rpRequest),
+      response
+    )
+    logger.info(`Saved response from ${uri} to db [${params.project}]`)
+  } else {
+    logger.info(`Recording disabled, not saving ${uri}`)
+  }
 
   responseWriter(this, response)
   const elapsed = Math.round((Date.now() - startTime) / 1000)

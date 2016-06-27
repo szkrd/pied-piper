@@ -5,6 +5,7 @@ const joiValidate = require('../../utils/joiValidate')
 
 const bodySchema = {
   active: joi.boolean(),
+  recording: joi.boolean(),
   dump: joi.boolean(),
   disabledProjects: joi.array().items(
     joi.string().lowercase().token().max(64),
