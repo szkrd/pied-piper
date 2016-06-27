@@ -68,15 +68,13 @@ function * get (next) {
     response = yield rp(options)
   } catch (err) {
     logger.error(`Request failed due to technical reasons (${uri})`)
-    yield next
-    return
+    this.throw('Technical Reasons', 500)
   }
 
   // severe errors (but not technical) - probably the response is not even a valid json
   if (isServerError(response)) {
     logger.error(`Request failed due to severe server error (${uri})`)
-    yield next
-    return
+    this.throw('Remote Server Error', 500)
   }
 
   if (runtime.dump) {
