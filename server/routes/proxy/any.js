@@ -1,5 +1,6 @@
 const _ = require('lodash')
 const logger = require('winston')
+const sleep = require('co-sleep')
 const rp = require('request-promise')
 const joi = require('joi')
 const joiValidate = require('../../utils/joiValidate')
@@ -36,6 +37,12 @@ function * get (next) {
 
   logger.info(`client req ${method}: ${uri}`)
   delete headers.host // don't give away us
+
+  // sleep a bit (global sleep value)
+  if (runtime.sleep) {
+    const timeout = Math.abs(runtime.sleep) * 1000
+    yield sleep(timeout)
+  }
 
   // if we have a fake response, return that and say good bye
   const fakeResponse = useFake(target, method, params, body, headers)

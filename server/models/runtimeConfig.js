@@ -7,6 +7,7 @@ const config = {
   recording: true,
   active: true,
   dump: true,
+  sleep: 0, // sleep in sec
   disabledProjects: []
 }
 

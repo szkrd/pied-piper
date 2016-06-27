@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/szkrd/pied-piper#readme",
   "dependencies": {
+    "co-sleep": "0.0.1",
     "joi": "8.4.2",
     "koa": "1.2.0",
     "koa-bodyparser": "2.2.0",
