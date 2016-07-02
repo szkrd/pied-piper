@@ -1,4 +1,3 @@
-const _ = require('lodash')
 const joi = require('joi')
 const joiValidate = require('../../utils/joiValidate')
 const proxiedResource = require('../../models/proxiedResource')
