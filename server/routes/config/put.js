@@ -16,7 +16,12 @@ const bodySchema = {
 
 module.exports = function * () {
   const body = joiValidate(this.request.body, bodySchema)
-  body.disabledProjects = _.sortedUniq(body.disabledProjects || [])
+  if (body.disabledProjects !== undefined) {
+    body.disabledProjects = _.sortedUniq(body.disabledProjects || [])
+  }
+  if (body.sleep !== undefined) {
+    body.sleep = body.sleep < 0 ? 0 : body.sleep
+  }
   yield runtimeConfig.set(body)
   this.body = null
 }
