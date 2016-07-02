@@ -1,3 +1,5 @@
+const _ = require('lodash')
+const ObjectId = require('mongodb').ObjectId
 const db = require('./db')
 const getCollection = (n) => db.collection(`p_${n}`)
 
@@ -32,7 +34,39 @@ function save (collectionName, request, response) {
   })
 }
 
+// TODO paging
+function getAll (collectionName, includes, search) {
+  const query = {}
+  includes = includes || {
+    _id: 1,
+    'request.method': 1,
+    'request.uri': 1,
+    'response.statusCode': 1
+  }
+  search = search || {}
+  if (search.method) {
+    query['request.method'] = {$in: search.method}
+  }
+  if (search.statusCode) {
+    query['response.statusCode'] = {$in: search.statusCode}
+  }
+  if (search.uri) {
+    // not the best, but $text is a whole different beast
+    const escapedUris = search.uri.map(sRex => _.escapeRegExp(sRex))
+    query['request.uri'] = new RegExp(escapedUris.join('|'), 'gi')
+  }
+  const collection = getCollection(collectionName)
+  return collection.find(query, includes).toArray()
+}
+
+function get (collectionName, id) {
+  const collection = getCollection(collectionName)
+  return collection.findOne({_id: new ObjectId(id)})
+}
+
 module.exports = {
   save,
-  load
+  load,
+  get: get,
+  getAll
 }

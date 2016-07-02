@@ -1,6 +1,6 @@
 const joi = require('joi')
 const joiValidate = require('../../utils/joiValidate')
-const db = require('../../models/db')
+const projects = require('../../models/projects')
 
 const paramsSchema = {
   project: joi.string().lowercase().token().max(64)
@@ -9,7 +9,6 @@ const paramsSchema = {
 // flush everything from collection
 module.exports = function * () {
   const params = joiValidate(this.params, paramsSchema)
-  const collection = db.collection(`p_${params.project}`)
-  collection.remove({})
+  projects.remove(params.project)
   this.body = null
 }

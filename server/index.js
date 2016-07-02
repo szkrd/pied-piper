@@ -1,6 +1,7 @@
 const logger = require('winston')
 const koa = require('koa')
 const cors = require('koa-cors')
+const queryStringPatcher = require('koa-qs')
 const bodyParser = require('koa-bodyparser')
 
 const config = require('../config/server')
@@ -18,6 +19,7 @@ logger.level = config.logLevel
 
 // setup koa
 const app = koa()
+queryStringPatcher(app, 'strict') // enforce arrays
 app.use(errorHandler.catchAll)
 app.use(errorHandler.raiseFourOhFour)
 app.use(bodyParser())
