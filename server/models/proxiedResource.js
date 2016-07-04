@@ -39,6 +39,7 @@ function getAll (collectionName, includes, search) {
   const query = {}
   includes = includes || {
     _id: 1,
+    disabled: 1,
     'request.method': 1,
     'request.uri': 1,
     'response.statusCode': 1
@@ -64,9 +65,28 @@ function get (collectionName, id) {
   return collection.findOne({_id: new ObjectId(id)})
 }
 
+function remove (collectionName, id) {
+  const collection = getCollection(collectionName)
+  return collection.remove({_id: new ObjectId(id)})
+}
+
+function toggle (collectionName, id) {
+  const collection = getCollection(collectionName)
+  return collection
+    .findOne({_id: new ObjectId(id)})
+    .then(result => { // TODO no result?
+      return collection.updateOne(
+        {_id: new ObjectId(id)},
+        {$set: {disabled: !result.disabled}}
+      )
+    })
+}
+
 module.exports = {
   save,
   load,
+  toggle,
   get: get,
-  getAll
+  getAll,
+  remove
 }

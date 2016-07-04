@@ -10,6 +10,7 @@ const paramsSchema = {
 const querySchema = {
   include: joi.array().items(joi.string().valid([
     '_id',
+    'disabled',
     'request.method',
     'request.target',
     'request.uri',

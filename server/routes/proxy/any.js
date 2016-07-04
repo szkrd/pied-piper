@@ -55,7 +55,7 @@ function * get (next) {
 
   // try to load it from db, if successful, then do not continue
   const fromDb = yield proxiedResource.load(params.project, rpRequest)
-  if (fromDb && active) {
+  if (fromDb && active && !fromDb.disabled) {
     const response = fromDb.response
     responseWriter(this, response)
     logger.info(`db res ${method}: ${uri} - ${response.statusCode} #${fromDb._id}`)

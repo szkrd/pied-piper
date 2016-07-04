@@ -21,6 +21,8 @@ router
 
   .get('/api/proxied-resources/:project', proxiedResources.getAll)
   .get('/api/proxied-resource/:project/:id', proxiedResources.get)
+  .delete('/api/proxied-resource/:project/:id', proxiedResources.delete)
+  .put('/api/proxied-resource/toggle/:project/:id', proxiedResources.toggle.put)
 
 module.exports = {
   getRoutes: () => router.routes()
