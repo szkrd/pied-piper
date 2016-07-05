@@ -18,6 +18,9 @@ const paramsSchema = {
   project: joi.string().lowercase().token().max(64)
 }
 
+const MAX_SLEEP = 10
+const getSleep = (n) => _.clamp(parseInt(n, 10) || 0, 0, MAX_SLEEP) * 1000
+
 function * get (next) {
   const runtime = yield runtimeConfig.get()
   let active = runtime.active
@@ -40,8 +43,7 @@ function * get (next) {
 
   // sleep a bit (global sleep value)
   if (runtime.sleep) {
-    const timeout = Math.abs(runtime.sleep) * 1000
-    yield sleep(timeout)
+    yield sleep(getSleep(runtime.sleep))
   }
 
   // if we have a fake response, return that and say good bye
@@ -54,9 +56,12 @@ function * get (next) {
   }
 
   // try to load it from db, if successful, then do not continue
-  const fromDb = yield proxiedResource.load(params.project, rpRequest)
+  const fromDb = yield proxiedResource.load(params.project, rpRequest, runtime.strict)
   if (fromDb && active && !fromDb.disabled) {
     const response = fromDb.response
+    if (response.sleep) {
+      yield sleep(getSleep(response.sleep))
+    }
     responseWriter(this, response)
     logger.info(`db res ${method}: ${uri} - ${response.statusCode} #${fromDb._id}`)
     yield next
@@ -93,7 +98,8 @@ function * get (next) {
     yield proxiedResource.save(
       params.project,
       Object.assign({ target }, rpRequest),
-      response
+      response,
+      runtime.strict
     )
     logger.info(`Saved response from ${uri} to db [${params.project}]`)
   } else {

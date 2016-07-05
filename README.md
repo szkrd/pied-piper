@@ -22,11 +22,13 @@ id in the database and it will group requests together).
 
 ## runtime configuration
 
-* __recording__: toggle recording of responses into db
-* __active__: if inactive, all the requests will be forwarded to the remote api
-* __dump__: save responses into dump directory
-* __sleep__: sleep in sec (to sleep on a certain response only, use fakes' generator response)
-* __disabledProjects__: array of strings, same as active, but on a per project basis
+* __recording__:true - toggle recording of responses into db
+* __strict__:false - match and record in/from db with request body (otherwise record/match with request method
+  and request uri only); not really recommended with arbitrary user data, but it's up to you.
+* __active__:true -  if inactive, all the requests will be forwarded to the remote api
+* __dump__:true - save responses into dump directory
+* __sleep__:0 - sleep in sec (to sleep on a certain response only, use fakes' generator response)
+* __disabledProjects__:[] - array of strings, same as active, but on a per project basis
 
 See [default values](./server/models/runtimeConfig.js),
 [api interface](./server/routes/config/put.js)

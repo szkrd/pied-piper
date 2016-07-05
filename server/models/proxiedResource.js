@@ -3,20 +3,29 @@ const ObjectId = require('mongodb').ObjectId
 const db = require('./db')
 const getCollection = (n) => db.collection(`p_${n}`)
 
-function load (collectionName, request) {
+function load (collectionName, request, strict) {
   const collection = getCollection(collectionName)
-  return collection.findOne({
+  const query = {
     'request.method': request.method,
     'request.uri': request.uri
-  })
+  }
+  if (strict) {
+    query['request.body'] = request.body
+  }
+  return collection.findOne(query)
 }
 
-function save (collectionName, request, response) {
+function save (collectionName, request, response, strict) {
   const collection = getCollection(collectionName)
-  return collection.findOneAndReplace({
+  const query = {
     'request.method': request.method,
     'request.uri': request.uri
-  }, {
+  }
+  if (strict) {
+    query['request.body'] = request.body
+  }
+  return collection.findOneAndReplace(query, {
+    sleep: 0, // let's not forget about this feature
     request: {
       method: request.method,
       target: request.target, // relative target api

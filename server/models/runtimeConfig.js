@@ -4,6 +4,7 @@ const configName = 'runtime'
 
 // default config, will be injected into db upon first change
 const config = {
+  strict: false, // match and record with request body
   recording: true, // store successful responses in the db
   active: true, // if inactive, all the requests will be forwarded to the remote api
   dump: true, // save responses into dump directory

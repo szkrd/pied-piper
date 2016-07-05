@@ -4,10 +4,11 @@ const runtimeConfig = require('../../models/runtimeConfig')
 const joiValidate = require('../../utils/joiValidate')
 
 const bodySchema = {
+  strict: joi.boolean(),
   active: joi.boolean(),
   recording: joi.boolean(),
   dump: joi.boolean(),
-  sleep: joi.number().integer().max(60),
+  sleep: joi.number().integer().max(10),
   disabledProjects: joi.array().items(
     joi.string().lowercase().token().max(64),
     joi.any().strip()
