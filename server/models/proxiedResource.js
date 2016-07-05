@@ -70,6 +70,11 @@ function remove (collectionName, id) {
   return collection.remove({_id: new ObjectId(id)})
 }
 
+function removeAll (collectionName) {
+  const collection = getCollection(collectionName)
+  return collection.remove({})
+}
+
 function toggle (collectionName, id) {
   const collection = getCollection(collectionName)
   return collection
@@ -88,5 +93,6 @@ module.exports = {
   toggle,
   get: get,
   getAll,
-  remove
+  remove,
+  removeAll
 }
