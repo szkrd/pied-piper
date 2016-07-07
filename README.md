@@ -12,6 +12,9 @@ Pied piper is a tool to alleviate the pain of working with slow APIs. It can:
 It uses no etags and tries to be as transparent as possible,
 but it is a high level tool, meant to work with JSON requests/responses.
 
+The name comes from the folk tale Rat-Catcher of Hamelin,
+this tool has nothing to do with tv series or startups.
+
 ## usage
 
 Instead of calling your `http://foo.bar.dev:8080/api/`,
