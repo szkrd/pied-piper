@@ -5,6 +5,10 @@ module.exports = (ctx, response) => {
     ctx.set(i, rHeaders[i])
   }
   ctx.body = response.body
+  // koa raw response would kick in otherwise
+  if (response.body === undefined) {
+    ctx.body = ''
+  }
   ctx.status = response.statusCode
   return ctx
 }

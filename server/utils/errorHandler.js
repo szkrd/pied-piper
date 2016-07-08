@@ -12,8 +12,7 @@ pe.appendStyle({
 
 function * raiseFourOhFour (next) {
   yield next
-  var status = this.status || 404
-  if (status === 404) {
+  if (this.status === 404 && this.body === undefined) {
     this.throw(404)
   }
 }
