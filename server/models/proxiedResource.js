@@ -49,6 +49,7 @@ function getAll (collectionName, includes, search) {
   includes = includes || {
     _id: 1,
     disabled: 1,
+    sleep: 1,
     'request.method': 1,
     'request.uri': 1,
     'response.statusCode': 1
@@ -72,6 +73,19 @@ function getAll (collectionName, includes, search) {
 function get (collectionName, id) {
   const collection = getCollection(collectionName)
   return collection.findOne({_id: new ObjectId(id)})
+}
+
+function set (collectionName, id, overlay) {
+  const collection = getCollection(collectionName)
+  return get(collectionName, id)
+    .then(result => {
+      return collection
+        .findOneAndReplace(
+          {_id: new ObjectId(id)},
+          _.merge(result, overlay),
+          {upsert: true}
+        )
+    })
 }
 
 function remove (collectionName, id) {
@@ -101,6 +115,7 @@ module.exports = {
   load,
   toggle,
   get: get,
+  set: set,
   getAll,
   remove,
   removeAll

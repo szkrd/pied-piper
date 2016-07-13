@@ -11,6 +11,7 @@ const querySchema = {
   include: joi.array().items(joi.string().valid([
     '_id',
     'disabled',
+    'sleep',
     'request.method',
     'request.target',
     'request.uri',
