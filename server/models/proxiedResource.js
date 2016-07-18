@@ -25,7 +25,8 @@ function save (collectionName, request, response, strict) {
     query['request.body'] = request.body
   }
   return collection.findOneAndReplace(query, {
-    sleep: 0, // let's not forget about this feature
+    sleep: 0,
+    lastModified: new Date(),
     request: {
       method: request.method,
       target: request.target, // relative target api
@@ -43,13 +44,16 @@ function save (collectionName, request, response, strict) {
   })
 }
 
-// TODO paging
-function getAll (collectionName, includes, search) {
+// TODO paging, proper sort
+function getAll (collectionName, includes, search, sort) {
+  const sortKey = sort.sortKey || 'lastModified'
+  const sortDir = sort.sortDir || -1
   const query = {}
   includes = includes || {
     _id: 1,
     disabled: 1,
     sleep: 1,
+    lastModified: 1,
     'request.method': 1,
     'request.uri': 1,
     'response.statusCode': 1
@@ -67,7 +71,7 @@ function getAll (collectionName, includes, search) {
     query['request.uri'] = new RegExp(escapedUris.join('|'), 'gi')
   }
   const collection = getCollection(collectionName)
-  return collection.find(query, includes).toArray()
+  return collection.find(query, includes).sort({[sortKey]: sortDir}).toArray()
 }
 
 function get (collectionName, id) {
