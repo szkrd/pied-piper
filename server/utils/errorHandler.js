@@ -37,6 +37,12 @@ function * catchAll (next) {
       resp.status = 400
     }
 
+    // helpful for non json responses, where the remote may have died
+    // so badly that it responded with an html error page instead of valid json :(
+    if (err.responseBody) {
+      resp.responseBody = err.responseBody
+    }
+
     resp.error = http.STATUS_CODES[resp.status]
     this.status = resp.status
     this.body = resp

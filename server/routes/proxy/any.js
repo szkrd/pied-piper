@@ -84,9 +84,10 @@ function * get (next) {
   }
 
   // severe errors (but not technical) - probably the response is not even a valid json
+  // (attach responseBody so that the client may have a clue about what happened)
   if (isServerError(response)) {
     logger.error(`Request failed due to severe server error (${uri})`)
-    this.throw('Remote Server Error', 500)
+    this.throw({ message: 'Remote Server Error', status: 500, responseBody: response.body })
   }
 
   if (runtime.dump) {
