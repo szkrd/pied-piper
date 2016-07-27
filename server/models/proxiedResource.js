@@ -86,7 +86,7 @@ function set (collectionName, id, overlay) {
       return collection
         .findOneAndReplace(
           {_id: new ObjectId(id)},
-          _.merge(result, overlay),
+          _.assign(result, overlay), // do not merge
           {upsert: true}
         )
     })
