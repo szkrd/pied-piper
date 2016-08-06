@@ -40,7 +40,8 @@ function save (collectionName, request, response, strict) {
       statusCode: response.statusCode
     }
   }, {
-    upsert: true
+    upsert: true,
+    returnNewDocument: true // noone cares
   })
 }
 

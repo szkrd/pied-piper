@@ -20,6 +20,7 @@ router
   .put('/api/config/toggle-project/:project', rtConfig.toggleProject.put)
 
   .get('/api/proxied-resources/:project', proxiedResources.getAll)
+  .get('/api/sse/proxied-resources/:project', proxiedResources.sse)
   .get('/api/proxied-resource/:project/:id', proxiedResources.get)
   .put('/api/proxied-resource/:project/:id', proxiedResources.put)
   .delete('/api/proxied-resource/:project/:id', proxiedResources.delete)

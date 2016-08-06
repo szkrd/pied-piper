@@ -8,6 +8,7 @@ const config = require('../../../config/server')
 const proxyUtils = require('./utils')
 const proxiedResource = require('../../models/proxiedResource')
 const runtimeConfig = require('../../models/runtimeConfig')
+const eventBus = require('../../models/eventBus')
 
 const useFake = proxyUtils.useFake
 const dumpFile = proxyUtils.dumpFile
@@ -96,12 +97,16 @@ function * get (next) {
 
   // if the response was fine, save it to the db
   if (runtime.recording) {
-    yield proxiedResource.save(
+    const operation = yield proxiedResource.save(
       params.project,
       Object.assign({ target }, rpRequest),
       response,
       runtime.strict
     )
+    const id = (_.get(operation, '_id') || _.get(operation, 'lastErrorObject.upserted') || '') + ''
+    if (id) {
+      eventBus.emit('proxiedResource.save', params.project, id)
+    }
     logger.info(`Saved response from ${uri} to db [${params.project}]`)
   } else {
     logger.info(`Recording disabled, not saving ${uri}`)
