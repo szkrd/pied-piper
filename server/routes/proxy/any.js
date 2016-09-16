@@ -10,7 +10,6 @@ const proxiedResource = require('../../models/proxiedResource')
 const runtimeConfig = require('../../models/runtimeConfig')
 const eventBus = require('../../models/eventBus')
 
-const nodeReq = proxyUtils.nodeReqPromise
 const useFake = proxyUtils.useFake
 const dumpFile = proxyUtils.dumpFile
 const responseWriter = proxyUtils.responseWriter
@@ -91,19 +90,9 @@ function * get (next) {
     }
   }
 
-  // I really, utterly do not know what the holy fuck is going on. Node http parser can be quite
-  // picky and IIS is a bitch, probably the two little bastards decided to hate each other
-  // during a full moon.
+  // FIXME with a terrible hack... try using curl in childprocess?
   if (netParseErrorWithIIS) {
-    logger.error('Node http parser broke. I\'m going to strip the request header down and sacrifice virgins.')
-    try {
-      response = yield nodeReq(options, true)
-      // I could mix in the session id from a previous response,
-      // and whatever I want from there, but do I really want that?
-      logger.warn('You got a response, but since I have wiped your session away, among other things, it may not be that good.')
-    } catch (err) {
-      this.throw('Black Magic.', 500)
-    }
+    this.throw('Node Versus IIS', 500)
   }
 
   // severe errors (but not technical) - probably the response is not even a valid json

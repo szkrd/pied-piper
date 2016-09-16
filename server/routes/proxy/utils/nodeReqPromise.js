@@ -18,7 +18,7 @@ function getRawOptions (rpOpts) {
 }
 
 module.exports = function (opts, wtf) {
-  let rawOptions = getRawOptions(opts)
+  const rawOptions = getRawOptions(opts)
   let transport
   if (/^https:/.test(opts.uri)) {
     transport = https
@@ -31,6 +31,7 @@ module.exports = function (opts, wtf) {
   if (wtf) {
     rawOptions.headers = { 'content-type': rawOptions.headers['content-type'] }
   }
+  // unfortunately native TCP socket errors are uncatchable
   return new Promise((resolve, reject) => {
     const req = transport.request(rawOptions, res => {
       const chunks = []
