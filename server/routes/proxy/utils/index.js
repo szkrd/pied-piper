@@ -2,5 +2,6 @@ module.exports = {
   dumpFile: require('./dumpFile'),
   useFake: require('./useFake'),
   responseWriter: require('./responseWriter'),
-  isServerError: require('./isServerError')
+  isServerError: require('./isServerError'),
+  nodeReqPromise: require('./nodeReqPromise')
 }
