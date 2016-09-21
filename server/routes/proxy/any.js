@@ -92,7 +92,7 @@ function * get (next) {
 
   // FIXME with a terrible hack... try using curl in childprocess?
   if (netParseErrorWithIIS) {
-    this.throw('Node Versus IIS', 500)
+    this.throw('Node Versus IIS', 511)
   }
 
   // severe errors (but not technical) - probably the response is not even a valid json
