@@ -44,7 +44,7 @@ See [default values](./server/models/runtimeConfig.js),
     "LOG_LEVEL": "silly",
     "NODE_ENV": "development",
     "TARGET": "http://dev.foo.bar.local/api",
-    "MONGODB_URI": "mongodb://localhost:27017/piedpiper"
+    "MONGODB_URI": "mongodb://localhost:27017/piedpiper",
     "HTTPS_KEY": "local.key",
     "HTTPS_CERT": "local.crt"
   }
