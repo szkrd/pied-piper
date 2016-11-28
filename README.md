@@ -45,6 +45,13 @@ See [default values](./server/models/runtimeConfig.js),
     "NODE_ENV": "development",
     "TARGET": "http://dev.foo.bar.local/api",
     "MONGODB_URI": "mongodb://localhost:27017/piedpiper"
+    "HTTPS_KEY": "local.key",
+    "HTTPS_CERT": "local.crt"
   }
 }
 ```
+
+## https support
+
+So far the server can run on https (supply both the cert and the key through env vars),
+but https target endpoints are not supported. I will add support, if I need it.
