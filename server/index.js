@@ -1,3 +1,5 @@
+const https = require('https')
+const fs = require('fs')
 const logger = require('winston')
 const koa = require('koa')
 const cors = require('koa-cors')
@@ -33,4 +35,12 @@ cleanUp.register()
 db.connect(null, () => {
   app.listen(config.port)
   logger.info(`Listening on ${config.port}`)
+  // quick https support
+  if (config.httpsKey && config.httpsCert) {
+    https.createServer({
+      key: fs.readFileSync(config.httpsKey),
+      cert: fs.readFileSync(config.httpsCert)
+    }, app.callback()).listen(config.httpsPort)
+    logger.info(`Listening on ${config.httpsPort}`)
+  }
 })
