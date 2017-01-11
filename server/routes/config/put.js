@@ -9,6 +9,7 @@ const bodySchema = {
   recording: joi.boolean(),
   dump: joi.boolean(),
   sleep: joi.number().integer().max(10),
+  retryLockTimeout: joi.number().integer().max(10),
   disabledProjects: joi.array().items(
     joi.string().lowercase().token().max(64),
     joi.any().strip()
@@ -20,9 +21,8 @@ module.exports = function * () {
   if (body.disabledProjects !== undefined) {
     body.disabledProjects = _.sortedUniq(body.disabledProjects || [])
   }
-  if (body.sleep !== undefined) {
-    body.sleep = body.sleep < 0 ? 0 : body.sleep
-  }
+  body.sleep = Math.max(body.sleep || 0, 0)
+  body.retryLockTimeout = Math.max(body.retryLockTimeout || 0, 0)
   yield runtimeConfig.set(body)
   this.body = null
 }

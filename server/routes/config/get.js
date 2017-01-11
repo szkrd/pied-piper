@@ -15,6 +15,7 @@ const querySchema = {
     'active',
     'dump',
     'sleep',
+    'retryLockTimeout',
     'disabledProjects',
     'strict'
   ]))

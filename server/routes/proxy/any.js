@@ -14,6 +14,7 @@ const useFake = proxyUtils.useFake
 const dumpFile = proxyUtils.dumpFile
 const responseWriter = proxyUtils.responseWriter
 const isServerError = proxyUtils.isServerError
+const retryBlacklist = {} // do not use a map
 
 const paramsSchema = {
   project: joi.string().lowercase().token().max(64)
@@ -33,6 +34,8 @@ function * get (next) {
   const target = this.originalUrl.replace(`/${params.project}/proxy`, '')
   const uri = config.target.replace(/\/$/, '') + target
   const rpRequest = { method, uri, body, headers }
+  const rpRequestStr = JSON.stringify(rpRequest)
+  const retryLockTimeout = runtime.retryLockTimeout * 1000
 
   // if this project had been explicitly disabled, then set active to false
   if ((runtime.disabledProjects || []).includes(params.project)) {
@@ -69,8 +72,22 @@ function * get (next) {
     return
   }
 
+  // either request or the browser trying to agressively retry urls (for resp 408)
+  let itemTried = retryBlacklist[rpRequestStr]
+  if (itemTried && Date.now() - itemTried.timestamp > retryLockTimeout) {
+    delete retryBlacklist[rpRequestStr]
+    itemTried = false
+  }
+  if (retryLockTimeout && itemTried) {
+    responseWriter(this, { statusCode: 408 })
+    logger.warn(`Flood protected ${uri}`)
+    yield next
+    return
+  }
+
   // we need the request to the api
   const options = Object.assign({
+    timeout: 120 * 1000, // try to avoid retry on timeout (https://github.com/request/request/issues/2421)
     json: true,
     resolveWithFullResponse: true,
     simple: false
@@ -82,17 +99,25 @@ function * get (next) {
   try {
     response = yield rp(options)
   } catch (err) {
+    let subReason = ''
     logger.error(`Request failed due to technical reasons (${uri})`)
+    if (err.cause.code === 'ETIMEDOUT') {
+      subReason = ` - request timed out (${uri})`
+    }
     if (err.cause.code === 'HPE_INVALID_CONSTANT' && aspNet) {
       netParseErrorWithIIS = true
     } else {
-      this.throw('Technical Reasons', 500)
+      this.throw(`Technical Reasons${subReason}`, 500)
     }
   }
 
   // FIXME with a terrible hack... try using curl in childprocess?
   if (netParseErrorWithIIS) {
     this.throw('Node Versus IIS', 512)
+  }
+
+  if (response.statusCode === 408 && retryLockTimeout) {
+    retryBlacklist[rpRequestStr] = { timestamp: Date.now() }
   }
 
   // severe errors (but not technical) - probably the response is not even a valid json

@@ -9,6 +9,7 @@ const config = {
   active: true, // if inactive, all the requests will be forwarded to the remote api
   dump: true, // save responses into dump directory
   sleep: 0, // sleep in sec
+  retryLockTimeout: 0, // retry locking in sec
   disabledProjects: [] // array of strings, same as active, but on a per project basis
 }
 
