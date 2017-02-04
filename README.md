@@ -55,3 +55,7 @@ See [default values](./server/models/runtimeConfig.js),
 
 So far the server can run on https (supply both the cert and the key through env vars),
 but https target endpoints are not supported. I will add support, if I need it.
+
+## TODO
+
+- [ ] rezip gzipped responses
