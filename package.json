@@ -7,7 +7,8 @@
     "start": "node server",
     "dev": "nodemon --watch server server",
     "flush-dumps": "rm ./dumps/*.json",
-    "lint": "eslint server"
+    "lint": "eslint server",
+    "docs": "node scripts/buildDocs.js"
   },
   "repository": {
     "type": "git",

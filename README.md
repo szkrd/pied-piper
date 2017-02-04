@@ -51,6 +51,12 @@ See [default values](./server/models/runtimeConfig.js),
 }
 ```
 
+## API documentation
+
+* all api related docs are in README.md files under their appropriate routes
+* [concatenated md](./api.md)
+* [rendered html](https://szkrd.github.io/pied-piper)
+
 ## https support
 
 So far the server can run on https (supply both the cert and the key through env vars),

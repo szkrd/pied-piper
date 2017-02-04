@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Pied Piper API</title>
+    <link rel="stylesheet" href="//cdn.rawgit.com/sindresorhus/github-markdown-css/gh-pages/github-markdown.css">
+    <style type="text/css">
+      body { font-face: arial, helvetica; }
+      h1.page-title { text-align: right; padding: 5px; margin: 0; font-size: 25px; color: #4e9a06; }
+      .markdown-body h1 { color: #eeeeec; background-color: #2e3436; border-radius: 5px; padding: 5px 10px; }
+      .markdown-body h2 { text-decoration: underline; color: #3465a4; }
+    </style>
+  </head>
+  <body>
+    <h1 class="page-title">pied-piper v0.0.1</h1>
+    <div class="markdown-body"><h1 id="user-content-config">config</h1>
+<p>Runtime configuration for the admin client.</p>
+<hr />
+<h2 id="user-content-apiconfig">/api/config</h2>
+<h3 id="user-content-get">GET</h3>
+<p>Returns a runtime config object.</p>
+<pre><code class="json language-json">{
+  "preFlight": {
+    "env": "development",
+    "port": 3100,
+    "target": "https://jsonplaceholder.typicode.com"
+  },
+  "fakes": [
+    "example"
+  ],
+  "strict": false,
+  "recording": true,
+  "active": true,
+  "dump": true,
+  "sleep": 0,
+  "retryLockTimeout": 0,
+  "disabledProjects": [ "project-foo" ]
+}</code></pre>
+<ul>
+<li><strong>preFlight</strong>: pre-startup env vars and parameters</li>
+<li><strong>fakes</strong>: active interceptors, see "fakes" directory for examples</li>
+<li><strong>strict</strong>: match with request body, not just request method and uri</li>
+<li><strong>recording</strong>: save response to db?</li>
+<li><strong>active</strong>: if not active, will always request from remote party; global sleep may still be active</li>
+<li><strong>dump</strong>: save json files on server into dumps folder</li>
+<li><strong>sleep</strong>: global sleep in sec; affects all requests, use it to simulate slow responses. Blocking via yield/await.</li>
+<li><strong>retryLockTimeout</strong>: sec; affects all requests, use it to protect remote server from accidental flooding on response 408.</li>
+<li><strong>disabledProjects</strong>: list of deactivated projects (they are still in the db)</li>
+</ul>
+<h3 id="user-content-put">PUT</h3>
+<p>Modify runtime config.</p>
+<h4 id="user-content-body-schema">body schema</h4>
+<ul>
+<li><strong>strict</strong>: boolean</li>
+<li><strong>active</strong>: boolean</li>
+<li><strong>recording</strong>: boolean</li>
+<li><strong>dump</strong>: boolean</li>
+<li><strong>sleep</strong>: number, integer, max: 10</li>
+<li><strong>retryLockTimeout</strong>: number, integer, max: 10</li>
+<li><strong>disabledProjects</strong>: array of (string, lowercase, token, max: 64)</li>
+</ul>
+<hr />
+<h2 id="user-content-apiconfigtoggle-projectproject">/api/config/toggle-project/:project</h2>
+<h3 id="user-content-params-schema">params schema</h3>
+<ul>
+<li><strong>project</strong>: string, lowercase, token, max: 64</li>
+</ul>
+<h3 id="user-content-put-1">PUT</h3>
+<p>Toggle project. Accepts empty payload. <br />
+Returns empty body on success.</p>
+<h1 id="user-content-projects">projects</h1>
+<p>Projects are containers. You can create "projectfoo" by calling<br />
+pied piper proxy through <em>http://pied-piper.dev:3100/project-foo/proxy</em>.</p>
+<p>Project names may contain alphanumeric characters and underscores <em>only</em>.</p>
+<hr />
+<h2 id="user-content-apiprojects">/api/projects</h2>
+<h3 id="user-content-get-1">GET</h3>
+<p>Returns a list of project names.</p>
+<h4 id="user-content-response">response</h4>
+<pre><code class="json language-json">["foo", "bar", "baz"]</code></pre>
+<hr />
+<h2 id="user-content-apiprojectsproject">/api/projects/:project</h2>
+<h3 id="user-content-params-schema-1">params schema</h3>
+<ul>
+<li><strong>project</strong>: string, lowercase, token, max: 64</li>
+</ul>
+<h3 id="user-content-delete">DELETE</h3>
+<p>Delete project by name, destroy collection in database.<br />
+Returns empty body on success.</p>
+<h1 id="user-content-proxied-resources">proxied resources</h1>
+<p>Proxied resources are the responses recorded in the db.<br />
+They may be retrieved, modified or deleted.</p>
+<hr />
+<h2 id="user-content-apiproxied-resourcesproject">/api/proxied-resources/:project</h2>
+<h3 id="user-content-params-schema-2">params schema</h3>
+<ul>
+<li><strong>project</strong>: string, lowercase, token, max: 64</li>
+</ul>
+<h3 id="user-content-get-2">GET</h3>
+<p>Get a list of resources. Response is an array of proxied resource objects.</p>
+<h3 id="user-content-delete-1">DELETE</h3>
+<p>Flush all items. Returns empty body on success.</p>
+<hr />
+<h2 id="user-content-apisseproxied-resourcesproject">/api/sse/proxied-resources/:project</h2>
+<p>Server side events (SSE). Streaming endpoint.</p>
+<h3 id="user-content-get-3">GET</h3>
+<p>Gets a new proxied resource object.</p>
+<hr />
+<h2 id="user-content-apiproxied-resourceprojectid">/api/proxied-resource/:project/:id</h2>
+<h3 id="user-content-get-4">GET</h3>
+<p>Disabled and sleep are optional, _id is mongo id.</p>
+<pre><code class="json language-json">{
+  "_id": "5895c2d67334cc413176f0ec",
+  "disabled": true,
+  "sleep": 3,
+  "lastModified": "2017-02-04T12:02:30.687Z",
+  "request": {
+    "body": { /*...*/ },
+    "headers": { /*...*/ },
+    "method": "GET",
+    "target": "/posts",
+    "uri": "https://jsonplaceholder.typicode.com/posts"  
+  },
+  "response": {
+    "headers": { /*...*/ },
+    "statusCode": 200,
+    "body": { /*...*/ }
+  }
+}</code></pre>
+<h3 id="user-content-put-2">PUT</h3>
+<p>Modify a stored resource object. Returns empty body on success.</p>
+<h4 id="user-content-body-schema-1">body schema</h4>
+<ul>
+<li><strong>sleep</strong>: number, integer, max: 10</li>
+<li><strong>disabled</strong>: boolean</li>
+<li><strong>request</strong>: object<ul>
+<li><strong>method</strong>: string, uppercase, valid: GET, POST, PUT, PATCH, DELETE</li>
+<li><strong>uri</strong>: string, uri: http &amp; https</li>
+<li><strong>target</strong>: string,</li>
+<li><strong>body</strong>: object / array / null</li>
+<li><strong>headers</strong>: object</li></ul></li>
+<li><strong>response</strong>: object<ul>
+<li><strong>body</strong>: object / array / null</li>
+<li><strong>headers</strong>: object</li>
+<li><strong>status</strong>: number, integer, min: 100, max: 600</li></ul></li>
+</ul>
+<h3 id="user-content-delete-2">DELETE</h3>
+<p>Deletes resource from db. Returns empty body on success.</p>
+<hr />
+<h2 id="user-content-apiproxied-resourcetoggleprojectid">/api/proxied-resource/toggle/:project/:id</h2>
+<h3 id="user-content-params-schema-3">params schema</h3>
+<ul>
+<li><strong>project</strong>: string, lowercase, token, max: 64</li>
+<li><strong>id</strong>: string, 24 char mongo-id</li>
+</ul>
+<h3 id="user-content-put-3">PUT</h3>
+<p>Returns empty body on success.</p>
+<h1 id="user-content-proxy">proxy</h1>
+<p>The purpose of the project, transparently proxy calls from<br />
+remote endpoint to local client.</p>
+<hr />
+<h2 id="user-content-projectproxy">/:project/proxy/*</h2>
+<p>The main proxy api endpoint. Anything directed here will be<br />
+proxied transparently forward to the <em>env.TARGET</em> url.</p>
+<h3 id="user-content-get-post-put-patch-delete">GET, POST, PUT, PATCH, DELETE</h3>
+<h4 id="user-content-params-schema-4">params schema</h4>
+<ul>
+<li><strong>project</strong>: string, lowercase, token, max: 64</li>
+</ul>
+<h4 id="user-content-response-1">response</h4>
+<p>Remote payload.</p>
+<ul>
+<li>gzipped content will be extracted</li>
+<li>cert errors will be swallowed</li>
+<li>no body may be replaced with empty body (resulting in status 204)</li>
+</ul></div>
+  </body>
+</html>
