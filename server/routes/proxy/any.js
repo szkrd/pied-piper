@@ -20,6 +20,7 @@ const paramsSchema = {
   project: joi.string().lowercase().token().max(64)
 }
 
+const UNZIP = true
 const MAX_SLEEP = 10
 const getSleep = (n) => _.clamp(parseInt(n, 10) || 0, 0, MAX_SLEEP) * 1000
 
@@ -89,6 +90,7 @@ function * get (next) {
   const options = Object.assign({
     timeout: 120 * 1000, // try to avoid retry on timeout (https://github.com/request/request/issues/2421)
     json: true,
+    gzip: UNZIP,
     resolveWithFullResponse: true,
     simple: false
   }, rpRequest)

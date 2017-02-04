@@ -2,6 +2,10 @@
 module.exports = (ctx, response) => {
   const rHeaders = response.headers || []
   for (let i in rHeaders) {
+    // TODO properly recompress
+    if (i === 'content-encoding' && rHeaders[i] === 'gzip') {
+      continue
+    }
     ctx.set(i, rHeaders[i])
   }
   ctx.body = response.body

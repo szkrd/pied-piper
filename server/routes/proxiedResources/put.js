@@ -14,11 +14,11 @@ const bodySchema = {
     method: joi.string().uppercase().valid('GET', 'POST', 'PUT', 'PATCH', 'DELETE'),
     uri: joi.string().uri({ scheme: [ 'http', 'https' ] }),
     target: joi.string(),
-    body: joi.object(),
+    body: [joi.object(), joi.array(), null], // would we need type any?
     headers: joi.object()
   }),
   response: joi.object().keys({
-    body: joi.object(),
+    body: [joi.object(), joi.array(), null],
     headers: joi.object(),
     statusCode: joi.number().integer().min(100).max(600)
   })
