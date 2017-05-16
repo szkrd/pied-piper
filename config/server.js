@@ -21,7 +21,8 @@ const config = {
   mongoDbUri: process.env.MONGODB_URI,
   target: process.env.TARGET,
   appDir: path.resolve(__dirname, '../'),
-  dumpDir: path.resolve(__dirname, '../dumps/')
+  dumpDir: path.resolve(__dirname, '../dumps/'),
+  uploadDir: path.resolve(__dirname, '../uploads/')
 }
 
 module.exports = config

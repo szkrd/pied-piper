@@ -1,3 +1,4 @@
+const fs = require('fs')
 const _ = require('lodash')
 const logger = require('winston')
 const sleep = require('co-sleep')
@@ -36,6 +37,9 @@ function * get (next) {
   const rpRequest = { method, uri, body, headers }
   const rpRequestStr = JSON.stringify(rpRequest)
   const retryLockTimeout = runtime.retryLockTimeout * 1000
+
+  // quick hack for formdata handling, which is not json, but I do need it NOW
+  const hasMultipartFormData = (headers['content-type'] || '').startsWith('multipart/form-data')
 
   // if this project had been explicitly disabled, then set active to false
   if ((runtime.disabledProjects || []).includes(params.project)) {
@@ -86,12 +90,38 @@ function * get (next) {
   }
 
   // we need the request to the api
-  const options = Object.assign({
+  let options = Object.assign({
     timeout: 120 * 1000, // try to avoid retry on timeout (https://github.com/request/request/issues/2421)
     json: true,
     resolveWithFullResponse: true,
     simple: false
   }, rpRequest)
+
+  // quick fix, TODO add proper multipart support?
+  if (hasMultipartFormData) {
+    delete options.body
+    options.formData = {}
+    const files = this.req.files || {}
+    const fileKeys = Object.keys(files)
+
+    fileKeys.forEach(key => {
+      const file = files[key]
+      options.formData[key] = fs.createReadStream(`${config.uploadDir}/${file.name}`)
+      // TODO properly pass values, don't let form-data autodetect things
+      // options.formData[key] = {
+      //   value: fs.createReadStream(`${config.uploadDir}/${file.name}`),
+      //   options: {
+      //     filename: file.originalname,
+      //     contentType: file.mimetype
+      //   }
+      // }
+    })
+    // with formData the body must be removed
+    if (fileKeys) {
+      delete options.body
+      console.log('form send', options)
+    }
+  }
 
   let response
   let netParseErrorWithIIS
@@ -100,7 +130,7 @@ function * get (next) {
     response = yield rp(options)
   } catch (err) {
     let subReason = ''
-    logger.error(`Request failed due to technical reasons (${uri})`)
+    logger.error(`Request failed due to technical reasons (${uri})`, err)
     if (err.cause.code === 'ETIMEDOUT') {
       subReason = ` - request timed out (${uri})`
     }

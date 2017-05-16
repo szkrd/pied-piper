@@ -44,3 +44,5 @@ fakes/*
 !fakes/README.md
 dumps/*
 !dumps/.gitkeep
+uploads/*
+!uploads/.gitkeep

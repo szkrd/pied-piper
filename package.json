@@ -30,6 +30,7 @@
     "koa": "1.2.0",
     "koa-bodyparser": "2.2.0",
     "koa-cors": "0.0.16",
+    "koa-multer": "0.0.2",
     "koa-qs": "2.0.0",
     "koa-router": "5.4.0",
     "lodash": "4.13.1",
