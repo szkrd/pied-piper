@@ -92,7 +92,8 @@ function * get (next) {
     json: true,
     gzip: UNZIP,
     resolveWithFullResponse: true,
-    simple: false
+    simple: false,
+    strictSSL: false
   }, rpRequest)
 
   let response
