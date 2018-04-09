@@ -34,13 +34,13 @@ cleanUp.register()
 // startup
 db.connect(null, () => {
   app.listen(config.port)
-  logger.info(`Listening on ${config.port}`)
+  logger.info(`Listening on ${config.port}, http`)
   // quick https support
   if (config.httpsKey && config.httpsCert) {
     https.createServer({
       key: fs.readFileSync(config.httpsKey),
       cert: fs.readFileSync(config.httpsCert)
     }, app.callback()).listen(config.httpsPort)
-    logger.info(`Listening on ${config.httpsPort}`)
+    logger.info(`Listening on ${config.httpsPort}, https`)
   }
 })
